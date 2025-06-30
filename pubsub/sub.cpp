@@ -30,14 +30,17 @@ int main(int argc, char * argv[])
 	
 	channel->BasicQos(consumer, 2);
 	
-	auto envelope = channel->BasicConsumeMessage(consumer);
-	std::cout << "Received " << envelope->Message()->Body() << std::endl;
-	
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	
-	std::cout << "success" << std::endl;
-
-	channel->BasicAck(envelope);
+	while (1) {
+		
+		auto envelope = channel->BasicConsumeMessage(consumer);
+		std::cout << "Received " << envelope->Message()->Body() << std::endl;
+		
+		// std::this_thread::sleep_for(std::chrono::seconds(1));
+		
+		std::cout << "success" << std::endl;
+		
+		channel->BasicAck(envelope);
+	}
 	
     return 0;
 

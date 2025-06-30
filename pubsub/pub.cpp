@@ -20,11 +20,14 @@ int main(int argc, char * argv[])
 
 	channel->DeclareQueue(QUEUE_NAME, false, true, false, false);
 
-	auto message = AmqpClient::BasicMessage::Create("Test message");
-	channel->BasicPublish("", QUEUE_NAME, message, true, false);
+	while (1) {
 
-	std::cout << "Message sended: " << message << std::endl;
-    
+		auto message = AmqpClient::BasicMessage::Create("Test message");
+		channel->BasicPublish("", QUEUE_NAME, message, true, false);
+		
+		std::cout << "Message sended: " << message << std::endl;
+	}
+		
     return 0;
 
 }
