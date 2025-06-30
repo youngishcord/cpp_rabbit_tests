@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
 	auto envelope = channel->BasicConsumeMessage(consumer);
 	std::cout << "Received " << envelope->Message()->Body() << std::endl;
 	
-	std::this_thread::sleep_for(std::chrono::seconds(11));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	
 	std::cout << "success" << std::endl;
 
