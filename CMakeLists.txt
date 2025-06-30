@@ -15,3 +15,17 @@ target_link_libraries(my_app PRIVATE
     ${Rabbitmq_LIB}
     Boost::chrono 
     Boost::system)
+
+add_executable(sub pubsub/sub.cpp)
+target_link_libraries(sub PRIVATE 
+    ${SimpleAmqpClient_LIB}
+    ${Rabbitmq_LIB}
+    Boost::chrono 
+    Boost::system)
+
+add_executable(pub pubsub/pub.cpp)
+target_link_libraries(pub PRIVATE 
+    ${SimpleAmqpClient_LIB}
+    ${Rabbitmq_LIB}
+    Boost::chrono 
+    Boost::system)
