@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(my_app)
 
+find_package(nlohmann_json REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono system)
 
 include_directories(/usr/local/include)
@@ -29,3 +30,11 @@ target_link_libraries(pub PRIVATE
     ${Rabbitmq_LIB}
     Boost::chrono 
     Boost::system)
+
+add_executable(pingpong pingpong/pingpong.cpp)
+target_link_libraries(pingpong PRIVATE 
+    ${SimpleAmqpClient_LIB}
+    ${Rabbitmq_LIB}
+    Boost::chrono 
+    Boost::system
+    nlohmann_json::nlohmann_json)
