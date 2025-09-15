@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.10)
 
 project(my_app)
 
+include(FetchContent)
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG        55f93686c01528224f448c19128836e7df245f72
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
 find_package(nlohmann_json REQUIRED)
 find_package(Boost REQUIRED COMPONENTS chrono system)
 
