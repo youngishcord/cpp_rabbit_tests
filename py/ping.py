@@ -11,7 +11,7 @@ class CustomTask(Task):
 
 app = celery.Celery(
 	"pub",
-	broker="amqp://user:pass@localhost:5672//",
+	broker="amqp://admin:admin@localhost:5545//",
 	backend="rpc://"
 )
 

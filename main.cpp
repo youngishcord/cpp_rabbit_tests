@@ -1,28 +1,50 @@
 #include <iostream>
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
+#include <nlohmann/json.hpp>
+
+#include <fmt/core.h>
+#include <fmt/format.h>
 
 using namespace std;
 using namespace AmqpClient;
+using json = nlohmann::json;
 
 /*
 All pointers are boost's smart pointers, so if the "ptr_t" variable excapes the scope, all the memories are freed and the file descripters are closed automatically.
 */
-int main(int argc, char * argv[])
+int main()
 {
-    // std::cout << "test message" << "\n";
-    Channel::ptr_t channel = Channel::Create("localhost", 5672, "user", "pass");
-    char szmsg[1024];
+    fmt::println("Hello from rabbit client");
 
-    try{
-        strcpy(szmsg, "Hi I'm C++ ");
-        BasicMessage::ptr_t msg = BasicMessage::Create();
-        msg->Body((string)szmsg);
-        channel->BasicPublish("", "SampleQueue",  msg);
-    }
-    catch(MessageReturnedException &e){
-        std::cout << "Message delivery error: " << e.what() << std::endl;
-    }
+    Channel::OpenOpts opts = Channel::OpenOpts::FromUri("amqp://guest:guest@localhost:5545//");
+    
+    Channel::ptr_t channel = Channel::Open(opts); //("localhost", 5545, "guest", "guest");
+    // char szmsg[1024];
 
+    auto consumerTag = channel->BasicConsume(
+            "test",
+            "CPP_WORKER",
+            true,
+            true, // Это автоподтверждение получения
+            false,
+            1
+        );
+
+    // while (true) {
+    auto envelope = channel->BasicConsumeMessage(consumerTag);
+    auto message = envelope->Message();
+    auto body = json::parse(message->Body());
+    // }
+
+    // try{
+    //     strcpy(szmsg, "Hi I'm C++ ");
+    //     BasicMessage::ptr_t msg = BasicMessage::Create();
+    //     msg->Body((string)szmsg);
+    //     channel->BasicPublish("", "test",  msg);
+    // }
+    // catch(MessageReturnedException &e){
+    //     std::cout << "Message delivery error: " << e.what() << std::endl;
+    // }
     
     return 0;
 
