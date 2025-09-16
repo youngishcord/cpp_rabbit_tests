@@ -2,3 +2,4 @@ build/
 lib/*
 venv
 __pycache__
+.vs*

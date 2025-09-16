@@ -1,9 +1,14 @@
 #include <iostream>
+#include <memory>
+
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
 #include <nlohmann/json.hpp>
 
-#include <fmt/core.h>
 #include <fmt/format.h>
+
+#include "include/thread_queue.h"
+#include "include/thread_task.h"
+#include "include/worker/worker.h"
 
 using namespace std;
 using namespace AmqpClient;
@@ -14,28 +19,23 @@ All pointers are boost's smart pointers, so if the "ptr_t" variable excapes the 
 */
 int main()
 {
-    fmt::println("Hello from rabbit client");
+    // Очередь, передающая структуру. TODO: возможно, нужно передавать смарт поинтеры!
+    // ThreadSafeQueue<ThreadTask> taskQueue;
+    auto taskQueue = std::make_shared<ThreadSafeQueue<ThreadTask>>();
 
-    Channel::ptr_t channel = Channel::Create("localhost", 5545, "guest", "guest");
-    // char szmsg[1024];
-
-    auto consumerTag = channel->BasicConsume(
-        "test",
-        "CPP_WORKER",
-        true,
-        true, // Это автоподтверждение получения
-        false,
-        1);
+    // Создание полноценного треда с воркером
+    std::thread workerThread(runWorker, "localhost", 5545, "guest", "guest", taskQueue);
+    workerThread.detach();
 
     while (true)
     {
-        auto envelope = channel->BasicConsumeMessage(consumerTag);
-        auto message = envelope->Message();
-
-        fmt::println("Message body is");
-        fmt::print("{}\n", message->Body());
-
-        auto body = json::parse(message->Body());
+        ThreadTask task;
+        if (taskQueue->try_pop(task))
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+            auto result = task.function();
+            task.promise.set_value(result);
+        }
     }
 
     // try{

@@ -4,6 +4,13 @@
 действия по обработке данных.
 */
 
+#pragma once
+
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <condition_variable>
+
 // Класс для безопасной очереди задач между потоками
 template <typename T>
 class ThreadSafeQueue

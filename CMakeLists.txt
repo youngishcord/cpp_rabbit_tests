@@ -20,9 +20,15 @@ add_subdirectory(lib/SimpleAmqpClient)
 
 add_subdirectory(lib/fmt)
 
-include_directories(include)
+include_directories(
+    include
+    include/worker
+    )
 
-add_executable(my_app main.cpp)
+add_executable(my_app 
+    main.cpp
+    src/worker/worker.cpp
+)
 target_include_directories(my_app PUBLIC include)
 target_link_libraries(my_app PRIVATE 
     SimpleAmqpClient
