@@ -16,25 +16,27 @@ int main()
 {
     fmt::println("Hello from rabbit client");
 
-    Channel::OpenOpts opts = Channel::OpenOpts::FromUri("amqp://guest:guest@localhost:5545//");
-    
-    Channel::ptr_t channel = Channel::Open(opts); //("localhost", 5545, "guest", "guest");
+    Channel::ptr_t channel = Channel::Create("localhost", 5545, "guest", "guest");
     // char szmsg[1024];
 
     auto consumerTag = channel->BasicConsume(
-            "test",
-            "CPP_WORKER",
-            true,
-            true, // Это автоподтверждение получения
-            false,
-            1
-        );
+        "test",
+        "CPP_WORKER",
+        true,
+        true, // Это автоподтверждение получения
+        false,
+        1);
 
-    // while (true) {
-    auto envelope = channel->BasicConsumeMessage(consumerTag);
-    auto message = envelope->Message();
-    auto body = json::parse(message->Body());
-    // }
+    while (true)
+    {
+        auto envelope = channel->BasicConsumeMessage(consumerTag);
+        auto message = envelope->Message();
+
+        fmt::println("Message body is");
+        fmt::print("{}\n", message->Body());
+
+        auto body = json::parse(message->Body());
+    }
 
     // try{
     //     strcpy(szmsg, "Hi I'm C++ ");
@@ -45,7 +47,6 @@ int main()
     // catch(MessageReturnedException &e){
     //     std::cout << "Message delivery error: " << e.what() << std::endl;
     // }
-    
-    return 0;
 
+    return 0;
 }
