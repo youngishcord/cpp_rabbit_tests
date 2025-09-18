@@ -23,7 +23,8 @@ add_subdirectory(lib/fmt)
 include_directories(
     include
     include/worker
-    )
+    include/worker/message
+)
 
 add_executable(my_app 
     main.cpp

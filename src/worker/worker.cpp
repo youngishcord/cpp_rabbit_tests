@@ -10,6 +10,8 @@
 #include <thread_queue.h>
 #include <thread_task.h>
 
+#include "message/result.h"
+
 using namespace std;
 using namespace AmqpClient;
 using json = nlohmann::json;
@@ -53,6 +55,34 @@ void runWorker(std::string host, int port, std::string user, std::string passwor
             std::move(promise)});
 
         fmt::print("function result is {}\n", future.get());
+
+        json result = {
+            {"pi", 3.141},
+            {"happy", true},
+            {"name", "Niels"},
+            {"nothing", nullptr},
+            {"answer", {{"everything", 42}}},
+            {"list", {1, 0, 2}},
+            {"object", {{"currency", "USD"}, {"value", 42.99}}}};
+
+        TaskResult taskResult = TaskResult(
+            TaskResult::Status::SUCCESS,
+            message->CorrelationId(),
+            result);
+
+        auto resultString = taskResult.dump();
+        // fmt::println(resultString);
+
+        AmqpClient::BasicMessage::ptr_t resultMessage = AmqpClient::BasicMessage::Create();
+        resultMessage->ContentType("application/json");
+        resultMessage->CorrelationId(message->CorrelationId());
+        resultMessage->Body(resultString);
+
+        fmt::print("task id {}\n", message->CorrelationId());
+        fmt::print("reply to {}\n", message->ReplyTo());
+
+        channel->BasicPublish("", message->ReplyTo(), resultMessage);
+
         channel->BasicAck(envelope);
     }
 }

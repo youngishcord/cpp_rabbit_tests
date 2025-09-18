@@ -4,6 +4,7 @@
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
 #include <nlohmann/json.hpp>
 
+#include <fmt/base.h>
 #include <fmt/format.h>
 
 #include "include/thread_queue.h"
@@ -32,7 +33,7 @@ int main()
         ThreadTask task;
         if (taskQueue->try_pop(task))
         {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
             auto result = task.function();
             task.promise.set_value(result);
         }

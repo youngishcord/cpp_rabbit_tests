@@ -17,5 +17,7 @@ task = CustomTask("simple.task").s().set(queue="test")
 
 # while 1:
 time = str(datetime.datetime.now())
-task.delay("qwer", 12, time, {"task": "sum", "param": [1, 2, 3, 4]})
+result = task.delay("qwer", 12, time, {"task": "sum", "param": [1, 2, 3, 4]})
+print(result)
+print(result.get())
 	# print(time)
